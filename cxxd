@@ -127,8 +127,9 @@ args, rem_args = ap.parse_known_args()
 
 parser = GradientPalette(False, args.rotate)
 colorizer = lambda line: parser.parse(line, args.pixelate)
-xxd = subprocess.Popen(["xxd"] + rem_args, stdin=sys.stdin, stdout=subprocess.PIPE)
-map(lambda line: print(format_line(line, colorizer).encode('utf-8')), xxd.stdout)
+xxd = subprocess.Popen(["xxd"] + rem_args, stdin=sys.stdin, stdout=subprocess.PIPE, bufsize=1)
+for line in iter(xxd.stdout.readline, ""):
+	print(format_line(line, colorizer).encode('utf-8'))
 
 # When `xxd` returns an error code, propagate it up.
 exitcode = xxd.wait()
